@@ -1,8 +1,9 @@
 import os
-
+import json
 import ijson
-from databases import utils
+
 from datetime import datetime
+from troto.databases import utils
 
 
 class NVD():
@@ -32,9 +33,23 @@ class NVD():
             utils.extract(f"{self.DB_PATH}/{file_name}", f"{self.DB_PATH}/nvd-{y}.json")
             print(f"Downloaded and extracted db for {y}")
 
-    def load(self):
+    def iload(self):
         data = ijson.parse(open(f"{self.DB_PATH}/nvd-2020.json"))
         for key, type, value in data:
             if type == "string" and "kubernetes" in value:
                 print(f"{key}   {type}   {value}")
         return
+
+    def load(self):
+        with open('./nvd-db/nvd-2020.json') as jf:
+            data = json.load(jf)
+            for v in data['CVE_Items']:
+                try:
+                    if "REJECT" not in v['cve']['description']['description_data'][0]['value']:
+                        for node in v['configurations']['nodes']:
+                            for cpe in node['cpe_match']:
+                                if cpe['cpe23Uri'] == "cpe:2.3:a:kubernetes:kubernetes:*:*:*:*:*:*:*:*":
+                                    print(f"{v['cve']['CVE_data_meta']['ID']}")
+                                    break
+                except KeyError:
+                    continue
