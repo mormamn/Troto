@@ -5,9 +5,8 @@ from troto.databases import nvd
 
 def main():
     nvd_handler = nvd.NVD()
-    # nvd_handler.get_db()
-    nvd_handler.load()
-    return
+    nvd_handler.get_db()
+    print(nvd_handler.load())
 
 
 if __name__ == '__main__':
