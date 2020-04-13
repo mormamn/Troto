@@ -46,24 +46,34 @@ class NVD():
             utils.extract(f"{self.DB_PATH}/{file_name}", f"{self.DB_PATH}/nvd-{y}.json")
             print(f"Downloaded and extracted db for {y}")
 
-    def load_db(self):
-        db_dump = []
+    def scan_db(self):
+        files = list()
         for db in os.listdir(f"{self.DB_PATH}"):
             if db.endswith(".json"):
-                print(f"\nScanning file: {db}\n")
-                with open(os.path.join(f"{self.DB_PATH}/{db}")) as jf:
-                    data = json.load(jf)
-                    for v in data['CVE_Items']:
-                        try:
-                            if "REJECT" not in v['cve']['description']['description_data'][0]['value']:
-                                for node in v['configurations']['nodes']:
-                                    for cpe in node['cpe_match']:
-                                        if "kubernetes" in cpe['cpe23Uri']:
-                                            print(f"{v['cve']['CVE_data_meta']['ID']}")
-                                            db_dump.append(v)
-                                            break
-                        except KeyError:
-                            continue
+                files.append(os.path.join(f"{self.DB_PATH}/{db}"))
+        return files
+
+    def load_db(self):
+        db_dump = []
+        db_files = self.scan_db()
+        for p in db_files:
+            with open(p) as jf:
+                data = json.load(jf)
+                for v in data['CVE_Items']:
+                    try:
+                        if "REJECT" not in v['cve']['description']['description_data'][0]['value']:
+                            for node in v['configurations']['nodes']:
+                                for cpe in node['cpe_match']:
+                                    if "kubernetes" in cpe['cpe23Uri']:
+                                        t = utils.template(id=v['cve']['CVE_data_meta']['ID'],
+                                                           desc=v['cve']['description']['description_data'][0]['value'],
+                                                           cvssV2=v['impact']['baseMetricV2']['cvssV2'],
+                                                           cvssV3=v['impact']['baseMetricV3']['cvssV3'],
+                                                           components=cpe)
+                                        db_dump.append(t)
+                                        break
+                    except KeyError:
+                        continue
         return json.dumps(db_dump, indent=4)
 
     def export_db(self, db=None):
