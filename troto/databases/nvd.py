@@ -10,8 +10,12 @@ class NVD():
     BASE_URL = "https://nvd.nist.gov/feeds/json/cve/1.1"
     DB_PATH = "./nvd-db"
 
-    def __init__(self, min_year=2019):
+    def __init__(self, min_year=2019, output=None):
         self.years = [y for y in range(min_year, datetime.now().year + 1)]
+        if output:
+            self.output_file = output
+        else:
+            self.output_file = f"{self.DB_PATH}/NVD-Kube-CVE.json"
         self.preflight()
 
     def preflight(self):
@@ -76,5 +80,6 @@ class NVD():
                         continue
         return json.dumps(db_dump, indent=4)
 
-    def export_db(self, db=None):
-        utils.save_file(f"{self.DB_PATH}/NVD-Kube-CVE.json", input=self.load_db())
+    def export_db(self):
+        print(f"Exporting db to file {self.output_file}")
+        utils.save_file(self.output_file, input=self.load_db())

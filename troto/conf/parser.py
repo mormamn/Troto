@@ -12,9 +12,13 @@ def parse():
                         default=2018,
                         help="Set a start year, CVE before that year will not apear")
 
+    parser.add_argument("--output",
+                        type=str,
+                        help="Path to save the output file")
+
     args = parser.parse_args()
 
     if args.start_year < 2002 or args.start_year > datetime.now().year:
         parser.error("Start year can't be lower than 2002 or higer than the current year")
-    else:
-        return args
+
+    return args
