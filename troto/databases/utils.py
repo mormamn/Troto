@@ -42,3 +42,16 @@ def save_file(path, input):
     else:
         with open(path, 'w') as of:
             of.write(input)
+
+
+def template(id, desc, cvssV2, cvssV3, components):
+    t = {
+        "id": id,
+        "description": desc,
+        "risk": {
+            "cvssV2": cvssV2,
+            "cvssV3": cvssV3
+        },
+        "components": components
+    }
+    return t
