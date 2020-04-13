@@ -1,3 +1,4 @@
+import os
 import urllib3
 import shutil
 import hashlib
@@ -33,3 +34,11 @@ def extract(path, outout):
     with gzip.open(path, 'rb') as f_in:
         with open(outout, 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
+
+
+def save_file(path, input):
+    if os.path.exists(path):
+        print(f"File already exist at path: {path}")
+    else:
+        with open(path, 'w') as of:
+            of.write(input)

@@ -46,7 +46,7 @@ class NVD():
             utils.extract(f"{self.DB_PATH}/{file_name}", f"{self.DB_PATH}/nvd-{y}.json")
             print(f"Downloaded and extracted db for {y}")
 
-    def load(self):
+    def load_db(self):
         db_dump = []
         for db in os.listdir(f"{self.DB_PATH}"):
             if db.endswith(".json"):
@@ -64,4 +64,7 @@ class NVD():
                                             break
                         except KeyError:
                             continue
-        return json.dumps(db_dump)
+        return json.dumps(db_dump, indent=4)
+
+    def export_db(self, db=None):
+        utils.save_file(f"{self.DB_PATH}/NVD-Kube-CVE.json", input=self.load_db())
