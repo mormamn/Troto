@@ -71,8 +71,8 @@ class NVD():
                                     if "kubernetes" in cpe['cpe23Uri']:
                                         t = utils.template(id=v['cve']['CVE_data_meta']['ID'],
                                                            desc=v['cve']['description']['description_data'][0]['value'],
-                                                           cvssV2=v['impact']['baseMetricV2']['cvssV2'],
-                                                           cvssV3=v['impact']['baseMetricV3']['cvssV3'],
+                                                           cvssV2=v['impact']['baseMetricV2']['cvssV2']['baseScore'],
+                                                           cvssV3=v['impact']['baseMetricV3']['cvssV3']['baseScore'],
                                                            components=cpe)
                                         db_dump.append(t)
                                         break
